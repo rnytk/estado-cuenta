@@ -276,13 +276,82 @@ function descargarCredito() {
                                 <p class="text-sm text-katoki-gray">{{ creditos.length }} encontrado(s)</p>
                             </div>
 
-                            <div v-if="creditos.length" class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                <button v-for="credito in creditos" :key="credito.codigo_credito" type="button" class="group rounded-xl border border-katoki-green/25 bg-white p-4 text-left shadow-sm transition hover:border-katoki-lime hover:bg-katoki-lime/10 focus:outline-none focus:ring-4 focus:ring-katoki-lime/30 disabled:cursor-wait disabled:opacity-70" :disabled="cargandoCredito" @click="seleccionarCredito(credito.codigo_credito)">
-                                    <span class="block text-xs font-semibold tracking-[0.12em] text-katoki-green">CRÉDITO</span>
-                                    <span class="mt-1 block font-semibold text-katoki-blue">{{ credito.codigo_credito }}</span>
-                                    <span class="mt-3 block text-sm font-medium text-katoki-forest group-hover:text-katoki-blue">Ver estado de cuenta →</span>
-                                </button>
-                            </div>
+                           <div v-if="creditos.length" class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            <button
+                                v-for="credito in creditos"
+                                :key="credito.codigo_credito"
+                                type="button"
+                                class="group rounded-xl border bg-white p-4 text-left shadow-sm transition focus:outline-none focus:ring-4 disabled:cursor-wait disabled:opacity-70"
+                                :class="{
+                                    'border-katoki-green/30 hover:border-katoki-lime hover:bg-katoki-lime/10 focus:ring-katoki-lime/30': credito.estado_credito?.toUpperCase() === 'V',
+                                    'border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:bg-amber-50/60 focus:ring-amber-200/50': credito.estado_credito?.toUpperCase() === 'M',
+                                    'border-rose-200 bg-rose-50/20 hover:border-rose-300 hover:bg-rose-50/60 focus:ring-rose-200/50': credito.estado_credito?.toUpperCase() === 'C',
+                                    'border-slate-200 hover:border-slate-300 hover:bg-slate-50 focus:ring-slate-200/50': !['V', 'R', 'C'].includes(credito.estado_credito?.toUpperCase())
+                                }"
+                                :disabled="cargandoCredito"
+                                @click="seleccionarCredito(credito.codigo_credito)"
+                            >
+                                <div class="flex items-center justify-between gap-2">
+                                    <span
+                                        class="block text-xs font-semibold tracking-[0.12em]"
+                                        :class="{
+                                            'text-katoki-green': credito.estado_credito?.toUpperCase() === 'V',
+                                            'text-amber-700/80': credito.estado_credito?.toUpperCase() === 'M',
+                                            'text-rose-700/80': credito.estado_credito?.toUpperCase() === 'C',
+                                            'text-slate-600': !['V', 'R', 'C'].includes(credito.estado_credito?.toUpperCase())
+                                        }"
+                                    >
+                                        CRÉDITO
+                                    </span>
+
+                                    <!-- Badge elegante de estado -->
+                                    <span
+                                        class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset"
+                                        :class="{
+                                            'bg-emerald-50 text-emerald-700 ring-emerald-600/20': credito.estado_credito?.toUpperCase() === 'V',
+                                            'bg-amber-50 text-amber-700 ring-amber-600/20': credito.estado_credito?.toUpperCase() === 'M',
+                                            'bg-rose-50 text-rose-700 ring-rose-600/20': credito.estado_credito?.toUpperCase() === 'C',
+                                            'bg-slate-100 text-slate-600 ring-slate-500/20': !['V', 'R', 'C'].includes(credito.estado_credito?.toUpperCase())
+                                        }"
+                                    >
+                                        <span
+                                            class="h-1.5 w-1.5 rounded-full"
+                                            :class="{
+                                                'bg-emerald-500': credito.estado_credito?.toUpperCase() === 'V',
+                                                'bg-amber-500': credito.estado_credito?.toUpperCase() === 'M',
+                                                'bg-rose-500': credito.estado_credito?.toUpperCase() === 'C',
+                                                'bg-slate-400': !['V', 'R', 'C'].includes(credito.estado_credito?.toUpperCase())
+                                            }"
+                                        ></span>
+                                        {{
+                                            credito.estado_credito?.toUpperCase() === 'V'
+                                                ? 'ACTIVO'
+                                                : credito.estado_credito?.toUpperCase() === 'M'
+                                                ? 'NOVACIÓN'
+                                                : credito.estado_credito?.toUpperCase() === 'C'
+                                                ? 'CANCELADO'
+                                                : credito.estado_credito
+                                        }}
+                                    </span>
+                                </div>
+
+                                <span class="mt-2 block font-semibold text-katoki-blue">
+                                    {{ credito.codigo_credito }}
+                                </span>
+
+                                <span
+                                    class="mt-3 block text-sm font-medium transition-colors"
+                                    :class="{
+                                        'text-katoki-forest group-hover:text-katoki-blue': credito.estado_credito?.toUpperCase() === 'V',
+                                        'text-amber-700 group-hover:text-amber-900': credito.estado_credito?.toUpperCase() === 'M',
+                                        'text-rose-700 group-hover:text-rose-900': credito.estado_credito?.toUpperCase() === 'C',
+                                        'text-slate-600 group-hover:text-slate-800': !['V', 'R', 'C'].includes(credito.estado_credito?.toUpperCase())
+                                    }"
+                                >
+                                    Ver estado de cuenta →
+                                </span>
+                            </button>
+                        </div>
                             <div v-else class="mt-6 rounded-2xl border border-dashed border-katoki-green/40 bg-katoki-forest/5 px-6 py-10 text-center">
                                 <p class="font-semibold text-katoki-blue">No hay créditos cancelados</p>
                                 <p class="mt-1 text-sm text-katoki-gray">Este asociado no tiene créditos con estado C.</p>
@@ -299,50 +368,75 @@ function descargarCredito() {
                                 <p class="text-sm text-katoki-gray">{{ ahorros.length }} encontrado(s)</p>
                             </div>
 
-                            <div v-if="ahorros.length" class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                            <button
-                                v-for="ahorro in ahorros"
-                                :key="ahorro.codigo_ahorro"
-                                type="button"
-                                class="group rounded-xl border border-katoki-green/25 bg-white p-4 text-left shadow-sm transition hover:border-katoki-lime hover:bg-katoki-lime/10 focus:outline-none focus:ring-4 focus:ring-katoki-lime/30 disabled:cursor-wait disabled:opacity-70"
-                                :disabled="cargandoAhorro"
-                                @click="seleccionarAhorro(ahorro.codigo_ahorro)"
-                            >
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="block text-xs font-semibold tracking-[0.12em] text-katoki-green">
-                                        CUENTA DE AHORRO
+                           <div v-if="ahorros.length" class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                <button
+                                    v-for="ahorro in ahorros"
+                                    :key="ahorro.codigo_ahorro"
+                                    type="button"
+                                    class="group rounded-xl border bg-white p-4 text-left shadow-sm transition focus:outline-none focus:ring-4 disabled:cursor-wait disabled:opacity-70"
+                                    :class="{
+                                        'border-katoki-green/30 hover:border-katoki-lime hover:bg-katoki-lime/10 focus:ring-katoki-lime/30': ahorro.estado_ahorro?.toUpperCase() === 'A',
+                                        'border-rose-200 bg-rose-50/20 hover:border-rose-300 hover:bg-rose-50/60 focus:ring-rose-200/50': ahorro.estado_ahorro?.toUpperCase() === 'C',
+                                        'border-slate-200 hover:border-slate-300 hover:bg-slate-50 focus:ring-slate-200/50': !['A', 'C'].includes(ahorro.estado_ahorro?.toUpperCase())
+                                    }"
+                                    :disabled="cargandoAhorro"
+                                    @click="seleccionarAhorro(ahorro.codigo_ahorro)"
+                                >
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span
+                                            class="block text-xs font-semibold tracking-[0.12em]"
+                                            :class="{
+                                                'text-katoki-green': ahorro.estado_ahorro?.toUpperCase() === 'A',
+                                                'text-rose-700/80': ahorro.estado_ahorro?.toUpperCase() === 'C',
+                                                'text-slate-600': !['A', 'C'].includes(ahorro.estado_ahorro?.toUpperCase())
+                                            }"
+                                        >
+                                            {{ ahorro.tipo_cuenta?.toUpperCase() }}
+                                        </span>
+
+                                        <!-- Badge elegante de estado -->
+                                        <span
+                                            class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset"
+                                            :class="{
+                                                'bg-emerald-50 text-emerald-700 ring-emerald-600/20': ahorro.estado_ahorro?.toUpperCase() === 'A',
+                                                'bg-rose-50 text-rose-700 ring-rose-600/20': ahorro.estado_ahorro?.toUpperCase() === 'C',
+                                                'bg-slate-100 text-slate-600 ring-slate-500/20': !['A', 'C'].includes(ahorro.estado_ahorro?.toUpperCase())
+                                            }"
+                                        >
+                                            <span
+                                                class="h-1.5 w-1.5 rounded-full"
+                                                :class="{
+                                                    'bg-emerald-500': ahorro.estado_ahorro?.toUpperCase() === 'A',
+                                                    'bg-rose-500': ahorro.estado_ahorro?.toUpperCase() === 'C',
+                                                    'bg-slate-400': !['A', 'C'].includes(ahorro.estado_ahorro?.toUpperCase())
+                                                }"
+                                            ></span>
+                                            {{
+                                                ahorro.estado_ahorro?.toUpperCase() === 'A'
+                                                    ? 'ACTIVO'
+                                                    : ahorro.estado_ahorro?.toUpperCase() === 'C'
+                                                    ? 'CANCELADO'
+                                                    : ahorro.estado_ahorro
+                                            }}
+                                        </span>
+                                    </div>
+
+                                    <span class="mt-2 block font-semibold text-katoki-blue">
+                                        {{ ahorro.codigo_ahorro }}
                                     </span>
-                                    
-                                    <!-- Badge elegante de estado -->
+
                                     <span
-                                        class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset"
+                                        class="mt-3 block text-sm font-medium transition-colors"
                                         :class="{
-                                            'bg-emerald-50 text-emerald-700 ring-emerald-600/20': ahorro.estado_ahorro === 'A',
-                                            'bg-rose-50 text-rose-700 ring-rose-600/20': ahorro.estado_ahorro === 'C',
-                                            'bg-slate-100 text-slate-600 ring-slate-500/20': ahorro.estado_ahorro !== 'A' && ahorro.estado_ahorro !== 'C'
+                                            'text-katoki-forest group-hover:text-katoki-blue': ahorro.estado_ahorro?.toUpperCase() === 'A',
+                                            'text-rose-700 group-hover:text-rose-900': ahorro.estado_ahorro?.toUpperCase() === 'C',
+                                            'text-slate-600 group-hover:text-slate-800': !['A', 'C'].includes(ahorro.estado_ahorro?.toUpperCase())
                                         }"
                                     >
-                                        <span
-                                            class="h-1.5 w-1.5 rounded-full"
-                                            :class="{
-                                                'bg-emerald-500': ahorro.estado_ahorro === 'A',
-                                                'bg-rose-500': ahorro.estado_ahorro === 'C',
-                                                'bg-slate-400': ahorro.estado_ahorro !== 'A' && ahorro.estado_ahorro !== 'C'
-                                            }"
-                                        ></span>
-                                        {{ ahorro.estado_ahorro === 'A' ? 'ACTIVO' : ahorro.estado_ahorro === 'C' ? 'CANCELADO' : ahorro.estado_ahorro }}
+                                        Ver tabla completa →
                                     </span>
-                                </div>
-
-                                <span class="mt-2 block font-semibold text-katoki-blue">
-                                    {{ ahorro.codigo_ahorro }}
-                                </span>
-
-                                <span class="mt-3 block text-sm font-medium text-katoki-forest group-hover:text-katoki-blue">
-                                    Ver tabla completa →
-                                </span>
-                            </button>
-                        </div>
+                                </button>
+                            </div>
                             <div v-else class="mt-6 rounded-2xl border border-dashed border-katoki-green/40 bg-katoki-forest/5 px-6 py-10 text-center">
                                 <p class="font-semibold text-katoki-blue">No hay ahorros cancelados</p>
                                 <p class="mt-1 text-sm text-katoki-gray">Este asociado no tiene cuentas de ahorro con estado C.</p>
@@ -415,7 +509,7 @@ function descargarCredito() {
 
                 <section v-if="estadoAhorro" class="mt-12" aria-live="polite">
                     <div class="mb-5">
-                        <p class="text-sm font-semibold tracking-[0.12em] text-katoki-green">ESTADO DE CUENTA DE AHORRO</p>
+                        <p class="text-sm font-semibold tracking-[0.12em] text-katoki-green"> DE CUENTA DE AHORRO</p>
                         <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
                             <div>
                                 <h2 class="mt-1 text-2xl font-semibold text-katoki-blue">Cuenta {{ estadoAhorro.cuenta }}</h2>

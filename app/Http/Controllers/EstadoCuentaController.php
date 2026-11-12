@@ -164,14 +164,19 @@ class EstadoCuentaController extends Controller
     {
         try {
             return collect(DB::connection('sqlsrv')->select(<<<'SQL'
-                SELECT codCre AS CODIGO_CREDITO
-                FROM creRegCre
-                WHERE codCli = ?
-                  --AND estCre = 'C'
-                ORDER BY codCre ASC
+                SELECT 
+                    DISTINCT
+                    T0.codCre AS CODIGO_CREDITO,
+                    T0.estAct AS ESTADO_CREDITO
+                FROM creRegCre T0
+                INNER JOIN creKarDia T1
+                ON T0.codCre = T1.codCre
+                WHERE T0.codCli = ?
+                ORDER BY T0.codCre ASC
             SQL, [$codigo]))
                 ->map(fn (object $credito): array => [
                     'codigo_credito' => (string) $credito->CODIGO_CREDITO,
+                    'estado_credito' => (string) $credito->ESTADO_CREDITO,
                 ])
                 ->values();
         } catch (QueryException $exception) {
@@ -185,7 +190,21 @@ class EstadoCuentaController extends Controller
     {
         try {
             return collect(DB::connection('sqlsrv')->select(<<<'SQL'
-                SELECT codAho AS CODIGO_AHORRO, estAho AS ESTADO_AHORRO
+                SELECT codAho AS CODIGO_AHORRO,
+                estAho AS ESTADO_AHORRO,
+                CASE RIGHT(RTRIM(codAho), 2)
+                    WHEN '01' THEN 'APORTACION ORDINARIA'
+                    WHEN '03' THEN 'APORTACION EXTRAORDINARIA'
+                    WHEN '02' THEN 'APORTACION ORDINARIA INFANTIL'
+                    WHEN '04' THEN 'AHORRO CORRIENTE'
+                    WHEN '05' THEN 'CUENTA KATO-KIDS'
+                    WHEN '07' THEN 'FONDO DE RETIRO'
+                    WHEN '08' THEN 'CUENTA MUJER'
+                    WHEN '10' THEN 'CUENTA JUVENIL'
+                    WHEN '11' THEN 'AHORRO PROGRAMADO'
+                    WHEN '99' THEN 'CUENTA RECEPTORA'
+                    ELSE 'OTRO'
+                END AS TIPO_CUENTA  
                 FROM ahoRegAho
                 WHERE codCli = ?
                   --AND estAho = 'C'
@@ -194,6 +213,7 @@ class EstadoCuentaController extends Controller
                 ->map(fn (object $savings): array => [
                     'codigo_ahorro' => trim((string) $savings->CODIGO_AHORRO),
                     'estado_ahorro' => trim((string) $savings->ESTADO_AHORRO),
+                    'tipo_cuenta' => trim((string) $savings->TIPO_CUENTA),
                 ])
                 ->values();
         } catch (QueryException $exception) {
@@ -258,8 +278,9 @@ class EstadoCuentaController extends Controller
                 FROM creKarDia AS T0
                 INNER JOIN creRegCre AS T1 ON T0.codCre = T1.codCre
                 LEFT JOIN cliRegCli AS T2 ON T1.codCli = T2.codCli
-                WHERE T1.estCre = 'C'
-                  AND T0.descob = 'R'
+                WHERE  --T1.estCre = 'C'
+                  --AND 
+                  T0.descob = 'R'
                   AND T0.codCre = ?
                 GROUP BY T0.numIng, T0.fecNor, T0.codCre
                 ORDER BY T0.codCre, T0.fecNor ASC
