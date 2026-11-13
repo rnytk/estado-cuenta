@@ -204,9 +204,9 @@ function descargarCredito() {
             <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
                 <a href="/" class="flex items-center gap-3" aria-label="Inicio de créditos">
                     <img :src="'/images/logo-katoki-simbolo.png'" alt="Cooperativa Kato-Ki, R.L." class="h-11 w-auto" />
-                    <span><b class="block tracking-tight">CRÉDITOS Y AHORROS</b><small class="text-white/70">Portal de consulta</small></span>
+                    <span><b class="block tracking-tight">CRÉDITOS Y AHORROS</b><small class="text-white/70">Portal de consulta historica</small></span>
                 </a>
-                <span class="hidden rounded-full border border-katoki-lime/60 px-3 py-1 text-xs text-white sm:block">Consulta segura</span>
+                <span class="hidden rounded-full border border-katoki-lime/60 px-3 py-1 text-xs text-white sm:block">Consulta historica</span>
             </div>
         </header>
 
@@ -515,6 +515,7 @@ function descargarCredito() {
                                 <h2 class="mt-1 text-2xl font-semibold text-katoki-blue">Cuenta {{ estadoAhorro.cuenta }}</h2>
                                 <p class="mt-1 text-sm text-katoki-gray"><span class="font-semibold text-katoki-forest">Asociado:</span> {{ estadoAhorro.asociado }}</p>
                                 <p class="mt-1 text-sm text-katoki-gray"><span class="font-semibold text-katoki-forest">Dirección:</span> {{ estadoAhorro.direccion }}</p>
+                                <p class="mt-1 text-sm text-katoki-gray"><span class="font-semibold text-katoki-forest">Fecha de apertura:</span> {{ formatDate(estadoAhorro.fecha_apertura) }}</p>
                                 <p class="mt-1 text-sm text-katoki-gray"><span class="font-semibold text-katoki-forest">Periodo:</span> {{ estadoAhorro.fecha_desde && estadoAhorro.fecha_hasta ? `${formatDate(estadoAhorro.fecha_desde)} al ${formatDate(estadoAhorro.fecha_hasta)}` : 'Todos los movimientos' }}</p>
                             </div>
                             <button v-if="estadoAhorro.movimientos.length" class="inline-flex items-center justify-center gap-2 rounded-xl border border-katoki-green bg-white px-4 py-2.5 font-semibold text-katoki-forest transition hover:bg-katoki-lime/15 focus:outline-none focus:ring-4 focus:ring-katoki-lime/30" type="button" @click="descargarAhorro">

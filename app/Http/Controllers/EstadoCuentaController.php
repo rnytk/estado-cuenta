@@ -233,6 +233,7 @@ class EstadoCuentaController extends Controller
                 SELECT TOP 1
                     T0.codAho AS CODIGO_AHORRO,
                     T0.codCli AS CODIGO_ASOCIADO,
+                    T0.fecApe AS FECHA_APERTURA,
                     LTRIM(RTRIM(CONCAT(T1.priNom, ' ', T1.segNom, ' ', T1.priApe, ' ', T1.segApe))) AS NOMBRE_ASOCIADO,
                     T1.numIde AS DPI,
                     T1.dirDom AS DIRECCION_DOMICILIO
@@ -257,7 +258,11 @@ class EstadoCuentaController extends Controller
             'asociado' => (string) $account->NOMBRE_ASOCIADO,
             'dpi' => (string) $account->DPI,
             'direccion' => (string) $account->DIRECCION_DOMICILIO,
+            'fecha_apertura' => !empty($account->FECHA_APERTURA)
+            ? \Carbon\Carbon::parse($account->FECHA_APERTURA)->format('Y-m-d') : '',
         ];
+
+        
     }
 
     private function paymentsFor(string $codigo): Collection
@@ -409,6 +414,7 @@ class EstadoCuentaController extends Controller
             'asociado' => $account['asociado'],
             'dpi' => $account['dpi'],
             'direccion' => $account['direccion'],
+            'fecha_apertura' => $account['fecha_apertura'],
             'fecha_emision' => now()->format('d/m/Y H:i'),
             'fecha_desde' => $range['desde'],
             'fecha_hasta' => $range['hasta'],

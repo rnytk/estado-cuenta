@@ -51,7 +51,9 @@
             <td>
                 <table class="details-column">
                     <tr><td class="detail-label">Cuenta de Ahorro:</td><td>{{ $cuenta }}</td></tr>
-                    <tr><td class="detail-label">Movimientos:</td><td>{{ $resumen['cantidad_movimientos'] }}</td></tr>
+                    
+                    <tr><td class="detail-label">Fecha de Apertura:</td><td colspan="2">{{ $fecha_apertura ? \Carbon\Carbon::parse($fecha_apertura)->format('d/m/Y') : 'No disponible' }}</td></tr>
+
                     <tr>
                         <td class="detail-label">Periodo:</td>
                         <td>
