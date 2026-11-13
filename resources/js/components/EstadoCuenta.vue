@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
 const criterio = ref('');
 const asociado = ref(null);
@@ -46,6 +46,15 @@ function formatDate(value) {
     const parsedDate = new Date(normalizedDate);
 
     return Number.isNaN(parsedDate.valueOf()) ? dateValue : fecha.format(parsedDate);
+}
+
+async function desplazarAlReporte(id) {
+    await nextTick();
+
+    document.getElementById(id)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+    });
 }
 
 function limpiarReportes() {
@@ -110,6 +119,7 @@ async function seleccionarCredito(codigoCredito) {
         }
 
         estadoCredito.value = data;
+        await desplazarAlReporte('estado-credito');
     } catch (exception) {
         errorCredito.value = exception.message;
     } finally {
@@ -168,6 +178,7 @@ async function generarEstadoAhorro() {
         }
 
         estadoAhorro.value = data;
+        await desplazarAlReporte('estado-ahorro');
     } catch (exception) {
         errorAhorro.value = exception.message;
     } finally {
@@ -445,7 +456,7 @@ function descargarCredito() {
                     </div>
                 </section>
 
-                <section v-if="estadoCredito" class="mt-12" aria-live="polite">
+                <section id="estado-credito" v-if="apartadoActivo === 'creditos' && estadoCredito" class="mt-12 scroll-mt-6" aria-live="polite">
                     <div class="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
                         <div>
                             <p class="text-sm font-semibold tracking-[0.12em] text-katoki-green">ESTADO DE CUENTA DE CRÉDITO</p>
@@ -486,7 +497,7 @@ function descargarCredito() {
                     </div>
                 </section>
 
-                <section v-if="cuentaAhorroSeleccionada" class="mt-12 rounded-3xl bg-white p-6 shadow-[0_20px_60px_-25px_rgba(7,29,73,0.2)] ring-1 ring-katoki-green/20 sm:p-8">
+                <section v-if="apartadoActivo === 'ahorros' && cuentaAhorroSeleccionada" class="mt-12 rounded-3xl bg-white p-6 shadow-[0_20px_60px_-25px_rgba(7,29,73,0.2)] ring-1 ring-katoki-green/20 sm:p-8">
                     <p class="text-sm font-semibold tracking-[0.12em] text-katoki-green">RANGO DE FECHAS OPCIONAL</p>
                     <h2 class="mt-1 text-2xl font-semibold text-katoki-blue">Cuenta {{ cuentaAhorroSeleccionada }}</h2>
                     <p class="mt-2 text-sm text-katoki-gray">La tabla completa se carga automáticamente. Selecciona ambas fechas solamente si deseas filtrar el período.</p>
@@ -507,7 +518,7 @@ function descargarCredito() {
                     <p v-if="errorAhorro" class="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{{ errorAhorro }}</p>
                 </section>
 
-                <section v-if="estadoAhorro" class="mt-12" aria-live="polite">
+                <section id="estado-ahorro" v-if="apartadoActivo === 'ahorros' && estadoAhorro" class="mt-12 scroll-mt-6" aria-live="polite">
                     <div class="mb-5">
                         <p class="text-sm font-semibold tracking-[0.12em] text-katoki-green"> DE CUENTA DE AHORRO</p>
                         <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
